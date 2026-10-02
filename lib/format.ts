@@ -48,13 +48,13 @@ export function whatsappLink(message: string, displayPhone?: string): string {
 
 const CLUB_URL = process.env.NEXT_PUBLIC_CLUB_URL ?? "https://club.cvgfc.ng";
 
-export function welcomeMessage(m: Member): string {
+/** Sent with the member's private join link: they pick a passcode and fill their profile. */
+export function welcomeMessage(m: Member, joinUrl: string): string {
   return [
     `Welcome to CVG FC, ${firstName(m)}! ⚽`,
     ``,
-    `Open the club app: ${CLUB_URL}`,
-    `Phone: ${m.phone}`,
-    `Passcode: last 4 digits of your phone`,
+    `Tap to set up your account (2 mins):`,
+    joinUrl,
     ``,
     `Your member ID: ${m.code}`,
   ].join("\n");

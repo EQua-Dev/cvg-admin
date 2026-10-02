@@ -85,3 +85,42 @@ export async function api<T = void>(
 export function errorMessage(e: unknown): string {
   return e instanceof ApiError ? e.message : "Something went wrong.";
 }
+
+// ---------- M2 ----------
+
+export interface Profile {
+  memberId: string;
+  photoUrl?: string;
+  favouredPosition?: string;
+  positionGroup?: string;
+  otherPositions: string[];
+  dominantFoot?: "RIGHT" | "LEFT" | "BOTH";
+  weakFoot?: number;
+  strengths: string[];
+  weaknesses: string[];
+  heightCm?: number;
+  age?: number;
+  stateOfOrigin?: string;
+  emergencyContact?: { name: string; phone: string };
+  consentPublic?: boolean;
+  complete: boolean;
+  missing: string[];
+}
+
+export interface ProfilingResult {
+  planFits: Record<string, number>;
+  topPlan: string;
+  mainRole?: { code: string; name: string };
+  secondaryRole?: { code: string; name: string };
+  label: string;
+  lowConfidence: boolean;
+  coachPick?: string;
+}
+
+export const PLAN_NAMES: Record<string, string> = {
+  POS: "Possession",
+  CTR: "Counter",
+  PRS: "Press",
+  BLK: "Defend",
+  DIR: "Direct",
+};

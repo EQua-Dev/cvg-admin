@@ -27,7 +27,7 @@ export default function NewMemberPage() {
       <main className="page">
         <div className="stack" style={{ gap: 4 }}>
           <h1 className="h1">Add member</h1>
-          <span className="muted small">They sign in with their phone. First passcode: last 4 digits of it.</span>
+          <span className="muted small">Next, you send them a join link on WhatsApp.</span>
         </div>
         <MemberForm
           mode="add"

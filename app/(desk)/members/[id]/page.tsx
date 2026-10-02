@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api, errorMessage, ROLES, STATUSES, type Member, type MemberStatus, type Role } from "@/lib/api";
 import { resetMessage, ROLE_LABEL, shortDate, STATUS_LABEL, welcomeMessage, whatsappLink } from "@/lib/format";
 import { MemberForm } from "@/components/MemberForm";
+import { MemberProfileCard } from "@/components/MemberProfileCard";
 import { useSession } from "@/components/Session";
 import { useToast } from "@/components/Toast";
 import { Chips, JerseyBadge, TopBar } from "@/components/ui";
@@ -15,14 +16,28 @@ export default function MemberPage() {
   const toast = useToast();
   const [m, setM] = useState<Member | null>(null);
   const [editing, setEditing] = useState(false);
-  const [share, setShare] = useState<"welcome" | "reset" | null>(null);
+  const [share, setShare] = useState<{ kind: "welcome"; url: string } | { kind: "reset" } | null>(null);
+  const [linkBusy, setLinkBusy] = useState(false);
 
   const load = useCallback(() => api<Member>(`/members/${id}`).then(setM), [id]);
 
+  /** A fresh private join link; the WhatsApp button appears once it's ready. */
+  const createJoinLink = useCallback(async () => {
+    setLinkBusy(true);
+    try {
+      const { url } = await api<{ url: string }>(`/members/${id}/onboarding-link`, { method: "POST" });
+      setShare({ kind: "welcome", url });
+    } catch (e) {
+      toast.show(errorMessage(e), "alert");
+    } finally {
+      setLinkBusy(false);
+    }
+  }, [id, toast]);
+
   useEffect(() => {
     load();
-    if (new URLSearchParams(window.location.search).has("welcome")) setShare("welcome");
-  }, [load]);
+    if (isAdmin && new URLSearchParams(window.location.search).has("welcome")) createJoinLink();
+  }, [load, isAdmin, createJoinLink]);
 
   if (!m) {
     return (
@@ -61,7 +76,7 @@ export default function MemberPage() {
     try {
       await api(`/members/${m.id}/reset-passcode`, { method: "POST" });
       toast.show("Passcode reset ✓");
-      setShare("reset");
+      setShare({ kind: "reset" });
     } catch (e) {
       toast.show(errorMessage(e), "alert");
     }
@@ -122,11 +137,11 @@ export default function MemberPage() {
         {share && m.phone && (
           <div className="card stack" style={{ borderColor: "var(--good)" }}>
             <span>
-              {share === "welcome" ? "Send them their sign-in details." : "Let them know their passcode was reset."}
+              {share.kind === "welcome" ? "Send their join link. It works for 14 days." : "Let them know their passcode was reset."}
             </span>
             <a
               className="btn btn-wa btn-block"
-              href={whatsappLink(share === "welcome" ? welcomeMessage(m) : resetMessage(m), m.phone)}
+              href={whatsappLink(share.kind === "welcome" ? welcomeMessage(m, share.url) : resetMessage(m), m.phone)}
               target="_blank"
               rel="noreferrer"
             >
@@ -146,6 +161,8 @@ export default function MemberPage() {
             </div>
           )}
         </div>
+
+        <MemberProfileCard memberId={m.id} canSeeStyle={me.member.roles.some((r) => r === "ADMIN" || r === "COACH" || r === "CAPTAIN")} />
 
         {isAdmin && (
           <>
@@ -172,10 +189,10 @@ export default function MemberPage() {
 
             <div className="stack" style={{ marginTop: 8 }}>
               <button className="btn btn-ghost btn-block" onClick={() => setEditing(true)}>Edit details</button>
-              {m.phone && !share && (
-                <a className="btn btn-ghost btn-block" href={whatsappLink(welcomeMessage(m), m.phone)} target="_blank" rel="noreferrer">
-                  Resend sign-in details
-                </a>
+              {m.status !== "LEFT" && (
+                <button className="btn btn-ghost btn-block" disabled={linkBusy} onClick={createJoinLink}>
+                  {linkBusy ? "Making link…" : "Send join link"}
+                </button>
               )}
               <button className="btn btn-danger btn-block" onClick={resetPasscode}>Reset passcode</button>
             </div>
