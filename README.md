@@ -30,6 +30,9 @@ Part of the CVG FC Club Management System, built by Devstrike Digital Limited.
 | Match · Lineup | Formation chips, pitch board. **✨ Auto-fill** picks the best available XI and bench. Tap any spot: players ranked for that spot with a 0–100 score (position, plan fit, training, form, dues) and why. Guests by name, captain and set-piece takers, ⚙ to change what counts for this match. Publish, then **Share lineup on WhatsApp** |
 | Match · Result | Score steppers, tap who scored and assisted, who played (pre-filled from the lineup). Saving opens a 48h POTM vote and, if there's a fee, a match-fee collection. Then: votes cast, close early, winner, and what the squad said (tag bars plus each opinion with the author's name) |
 | **FUT ratings** (admin, coach; from Squad or Home) | Open a round (name, 3/7/14 days), watch "14 of 18 have rated everyone" (never who gave what), close it to make the cards. Change the 6 card stats per position group with chips (no re-vote). Cards list with OVR, tier and best-fit group. The lineup picker shows each player's OVR for the spot |
+| **Styles** (from Squad) | Each player's label ("Counter-attacking Inside Forward") and five game plan bars. **Role check**: where a player's own answer and the squad's vote differ; tap to make your call. Ask everyone to redo the questionnaire (e.g. new season) |
+| **Chemistry rules** | The 16 starter rules (green works, amber risky, red clash), side by side or anywhere in the team, optional game plan. Add or remove rules |
+| Lineup chemistry | Coloured lines between neighbouring players on the lineup board and a "Chemistry +6" chip; tap it to see which pairs work and why, and who suits the plan |
 | Me | Change passcode, sign out |
 
 Only admins can change things; coaches, treasurers and captains can view for now.

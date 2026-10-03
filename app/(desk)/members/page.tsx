@@ -44,7 +44,8 @@ export default function MembersPage() {
       <main className="page">
         <div className="spread">
           <h1 className="h1">Squad</h1>
-          <Link href="/ratings" className="btn btn-ghost btn-sm" style={{ marginLeft: "auto" }}>FUT ratings</Link>
+          <Link href="/styles" className="btn btn-ghost btn-sm" style={{ marginLeft: "auto" }}>Styles</Link>
+          <Link href="/ratings" className="btn btn-ghost btn-sm">FUT ratings</Link>
           {isAdmin && (
             <Link href="/members/new" className="btn btn-primary btn-sm">
               + Add

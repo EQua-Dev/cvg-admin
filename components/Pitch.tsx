@@ -19,6 +19,7 @@ export function Pitch({
   captainId,
   highlight,
   scores,
+  links,
 }: {
   slots: SlotView[];
   onSlot?: (idx: number) => void;
@@ -26,7 +27,9 @@ export function Pitch({
   captainId?: string;
   highlight?: string;
   scores?: Record<number, number | undefined>;
+  links?: { a: number; b: number; link: "GREEN" | "AMBER" | "RED"; scope: "NEIGHBOURS" | "TEAM" }[];
 }) {
+  const at = (idx: number) => slots.find((s) => s.idx === idx);
   return (
     <div className="pitch" role="group" aria-label="Lineup">
       <svg className="pitch-lines" viewBox="0 0 100 133" preserveAspectRatio="none" aria-hidden>
@@ -38,6 +41,19 @@ export function Pitch({
         <rect x="38" y="3" width="24" height="6" />
         <rect x="38" y="124" width="24" height="6" />
       </svg>
+      {links && links.length > 0 && (
+        <svg className="pitch-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+          {links.map((l, i) => {
+            const a = at(l.a);
+            const b = at(l.b);
+            if (!a || !b) return null;
+            return (
+              <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} className={`chem chem-${l.link}`}
+                strokeDasharray={l.scope === "TEAM" ? "3 3" : undefined} vectorEffect="non-scaling-stroke" />
+            );
+          })}
+        </svg>
+      )}
       {slots.map((s) => {
         const filled = !!(s.memberId || s.guestName);
         const score = scores?.[s.idx];

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   api, errorMessage, FACTOR_LABEL, PLAN_NAMES,
-  type Candidate, type Factor, type LineupView, type MatchDetail, type MatchOptions, type SelectionView, type SlotView,
+  type Candidate, type ChemistryView, type Factor, type LineupView, type MatchDetail, type MatchOptions, type SelectionView, type SlotView,
 } from "@/lib/api";
 import { lineupMessage, whatsappLink } from "@/lib/format";
 import { Pitch } from "@/components/Pitch";
@@ -50,6 +50,8 @@ export function LineupTab({ data, onChange }: { data: MatchDetail; onChange: () 
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [published, setPublished] = useState<LineupView | null>(data.lineup?.publishedAt ? data.lineup : null);
+  const [chem, setChem] = useState<ChemistryView | null>(null);
+  const [chemOpen, setChemOpen] = useState(false);
 
   useEffect(() => {
     api<MatchOptions>("/matches/options").then((o) => {
@@ -74,6 +76,17 @@ export function LineupTab({ data, onChange }: { data: MatchDetail; onChange: () 
     Object.entries(picks).forEach(([idx, p]) => p.memberId && map.set(p.memberId, Number(idx)));
     return map;
   }, [picks]);
+
+  // Chemistry follows every change on the board (debounced).
+  useEffect(() => {
+    if (!formation) return;
+    const slotsBody = Object.entries(picks).filter(([i, p]) => Number(i) < BENCH && p.memberId).map(([i, p]) => ({ idx: Number(i), memberId: p.memberId }));
+    const t = setTimeout(() => {
+      api<ChemistryView>("/chemistry", { method: "POST", body: { teamSize: m.teamSize, formation, plan: m.gamePlan ?? null, slots: slotsBody } })
+        .then(setChem).catch(() => setChem(null));
+    }, 250);
+    return () => clearTimeout(t);
+  }, [picks, formation, m.teamSize, m.gamePlan]);
 
   if (!sel || !formation) return <div className="empty"><span className="spinner" /></div>;
 
@@ -182,7 +195,13 @@ export function LineupTab({ data, onChange }: { data: MatchDetail; onChange: () 
         </div>
       )}
 
-      <Pitch slots={slots} onSlot={editable ? setOpen : undefined} selected={open} captainId={roles.captainId} scores={editable ? scores : undefined} />
+      <Pitch slots={slots} onSlot={editable ? setOpen : undefined} selected={open} captainId={roles.captainId} scores={editable ? scores : undefined} links={chem?.links} />
+      {chem && filled > 1 && (
+        <button className="chem-chip" style={{ alignSelf: "flex-start" }} onClick={() => setChemOpen(true)}>
+          Chemistry {chem.total > 0 ? `+${chem.total}` : chem.total}
+          <span className="small"><span className="dot dot-GREEN" /> {chem.green} <span className="dot dot-AMBER" /> {chem.amber} <span className="dot dot-RED" /> {chem.red}</span>
+        </button>
+      )}
 
       <span className="label">Bench{m.planB ? ` · ranked for ${PLAN_NAMES[m.planB]}` : ""}</span>
       <div className="bench-row">
@@ -266,6 +285,26 @@ export function LineupTab({ data, onChange }: { data: MatchDetail; onChange: () 
               </button>
             ))}
           </div>
+        </Sheet>
+      )}
+
+      {chemOpen && chem && (
+        <Sheet onClose={() => setChemOpen(false)}>
+          <strong>Chemistry {chem.total > 0 ? `+${chem.total}` : chem.total}</strong>
+          {chem.links.length === 0 && <span className="muted small">No strong pairings either way. Set roles in Squad → Styles.</span>}
+          {chem.links.map((l, i) => {
+            const n = (idx: number) => slots.find((s) => s.idx === idx)?.name ?? "";
+            return (
+              <div key={i} className="row small" style={{ gap: 10 }}>
+                <span className={`dot dot-${l.link}`} />
+                <span className="grow"><strong>{n(l.a)}</strong> + <strong>{n(l.b)}</strong>{l.note ? <span className="muted"> · {l.note}</span> : null}</span>
+              </div>
+            );
+          })}
+          {chem.planFits.length > 0 && (
+            <span className="small">+{chem.planFits.length} for players who suit {m.gamePlan ? PLAN_NAMES[m.gamePlan] : "the plan"}: {chem.planFits.map((i) => slots.find((s) => s.idx === i)?.name).join(", ")}</span>
+          )}
+          <span className="muted small">Roles: {Object.entries(chem.roles).filter(([, r]) => r).map(([i, r]) => `${slots.find((s) => s.idx === Number(i))?.name} ${r!.name}`).join(" · ") || "none set yet"}</span>
         </Sheet>
       )}
 

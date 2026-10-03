@@ -470,3 +470,19 @@ export interface CardView {
 }
 export const TIER_LABEL: Record<Tier, string> = { BRONZE: "Bronze", SILVER: "Silver", GOLD: "Gold", ELITE: "CVG Elite" };
 export const GROUP_LABEL: Record<PositionGroup, string> = { GK: "Goalkeepers", DEF: "Defenders", MID: "Midfielders", ATT: "Attackers" };
+
+// ---------- M7: profiles, roles, chemistry ----------
+
+export type Link = "GREEN" | "AMBER" | "RED";
+export interface RoleRef { code: string; name: string }
+export interface PlanFit { code: string; name: string; fit: number; self?: number; ratings?: number; matches?: number }
+export interface PlayerStyle {
+  memberId: string; name: string; fullName: string; jerseyNumber?: number; photoUrl?: string; position?: string; group?: PositionGroup;
+  label?: string; topPlan?: string; planFits: PlanFit[]; role?: RoleRef;
+  selfRole?: RoleRef; peerRoles?: { code: string; name: string; votes: number }[]; coachRole?: RoleRef; disagree?: boolean; lowConfidence?: boolean; answeredQuestionnaire?: boolean;
+}
+export interface ChemistryView {
+  links: { a: number; b: number; link: Link; scope: "NEIGHBOURS" | "TEAM"; note?: string }[];
+  total: number; green: number; amber: number; red: number; planFits: number[]; roles: Record<string, RoleRef | undefined>;
+}
+export interface RuleView { id: string; roleA: string; roleB: string; nameA: string; nameB: string; link: Link; scope: "NEIGHBOURS" | "TEAM"; plan?: string; unlessRole?: string; note?: string }
