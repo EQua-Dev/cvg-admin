@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { api, ApiError, type LedgerMonth, type MatchView, type Member, type Season, type Session } from "@/lib/api";
+import { api, ApiError, type LedgerMonth, type MatchView, type Member, type RatingWindowView, type Season, type Session } from "@/lib/api";
 import { clock, firstName, greeting, naira, sessionDay } from "@/lib/format";
 import { useSession } from "@/components/Session";
 import { TopBar } from "@/components/ui";
@@ -16,6 +16,8 @@ export default function HomePage() {
   const runsTraining = me.member.roles.some((r) => r === "ADMIN" || r === "COACH" || r === "CAPTAIN");
   const [next, setNext] = useState<Session | null | undefined>(undefined);
   const [matches, setMatches] = useState<MatchView[]>([]);
+  const [ratingWindow, setRatingWindow] = useState<RatingWindowView | null>(null);
+  const runsRatings = me.member.roles.some((r) => r === "ADMIN" || r === "COACH");
 
   useEffect(() => {
     api<Member[]>("/members").then(setMembers).catch(() => setMembers([]));
@@ -26,12 +28,13 @@ export default function HomePage() {
     api<Session[]>("/training/sessions")
       .then((l) => setNext(l.find((s) => s.status === "SCHEDULED") ?? null))
       .catch(() => setNext(null));
+    if (runsRatings) api<RatingWindowView[]>("/ratings/windows").then((l) => setRatingWindow(l.find((w) => w.open) ?? null)).catch(() => {});
     if (runsTraining) {
       Promise.all([api<MatchView[]>("/matches?when=upcoming"), api<MatchView[]>("/matches?when=past")])
         .then(([up, past]) => setMatches([...past.filter((m) => m.potmOpen), ...up.filter((m) => m.status === "SCHEDULED").slice(0, 1)]))
         .catch(() => {});
     }
-  }, [handlesMoney, runsTraining]);
+  }, [handlesMoney, runsTraining, runsRatings]);
 
   const active = members?.filter((m) => m.status === "ACTIVE").length ?? 0;
   const trialists = members?.filter((m) => m.status === "TRIALIST").length ?? 0;
@@ -81,6 +84,16 @@ export default function HomePage() {
             <span aria-hidden>→</span>
           </Link>
         ))}
+
+        {ratingWindow && (
+          <Link href="/ratings" className="card card-link card-accent">
+            <span className="stack" style={{ gap: 6 }}>
+              <span className="label">FUT ratings open</span>
+              <span><strong className="mono">{ratingWindow.finished}</strong> of {ratingWindow.raters} have rated everyone</span>
+            </span>
+            <span aria-hidden>→</span>
+          </Link>
+        )}
 
         <Link href="/members" className="card card-link">
           <span className="stack" style={{ gap: 6 }}>

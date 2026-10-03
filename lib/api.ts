@@ -434,6 +434,7 @@ export interface Candidate {
   assists: number;
   potmVotes: number;
   attendancePercent?: number;
+  ovrs: Partial<Record<"GK" | "DEF" | "MID" | "ATT", number>>;
 }
 
 export interface SelectionView {
@@ -452,3 +453,20 @@ export const FACTOR_LABEL: Record<Factor, string> = {
 };
 export const TYPE_LABEL: Record<MatchType, string> = { FRIENDLY: "Friendly", TOURNAMENT: "Tournament", LEAGUE: "League", INTERNAL: "Internal" };
 export const SIDE_LABEL: Record<MatchSide, string> = { HOME: "Home", AWAY: "Away", NEUTRAL: "Neutral" };
+
+// ---------- M6: ratings and FUT cards ----------
+
+export type PositionGroup = "GK" | "DEF" | "MID" | "ATT";
+export type Tier = "BRONZE" | "SILVER" | "GOLD" | "ELITE";
+export interface RatingWindowView { id: string; title: string; opensAt: string; closesAt: string; open: boolean; closedAt?: string; finished: number; raters: number; cards?: number }
+export interface StatSetsView {
+  sets: { group: PositionGroup; attrs: string[]; labels: string[] }[];
+  attributes: { code: string; label: string; title: string; block: string }[];
+}
+export interface CardView {
+  memberId: string; name: string; fullName: string; jerseyNumber?: number; position?: string; group?: PositionGroup;
+  ovr?: number; tier?: Tier; published: boolean; stats: { code: string; label: string; value?: number; peers: number }[];
+  bestGroup?: PositionGroup; groups: { group: PositionGroup; ovr?: number; published: boolean }[]; round: string;
+}
+export const TIER_LABEL: Record<Tier, string> = { BRONZE: "Bronze", SILVER: "Silver", GOLD: "Gold", ELITE: "CVG Elite" };
+export const GROUP_LABEL: Record<PositionGroup, string> = { GK: "Goalkeepers", DEF: "Defenders", MID: "Midfielders", ATT: "Attackers" };

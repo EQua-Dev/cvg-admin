@@ -241,7 +241,7 @@ export function LineupTab({ data, onChange }: { data: MatchDetail; onChange: () 
                   <span className="grow stack" style={{ gap: 2 }}>
                     <span style={{ fontWeight: 600 }}>{c.name}{atLabel && <span className="pill" style={{ marginLeft: 6, background: "var(--haze)" }}>{atLabel}</span>}</span>
                     <span className="factor">
-                      {[c.favoured, c.available ? null : "Out", c.attendancePercent != null && `Training ${c.attendancePercent}%`, c.goals + c.assists > 0 && `⚽${c.goals} 🅰${c.assists}`, c.factors.DUES === 0 && "Owes dues"]
+                      {[c.favoured, c.available ? null : "Out", openSlot && c.ovrs?.[groupOf(openSlot.position)] != null && `OVR ${c.ovrs[groupOf(openSlot.position)]}`, c.attendancePercent != null && `Training ${c.attendancePercent}%`, c.goals + c.assists > 0 && `⚽${c.goals} 🅰${c.assists}`, c.factors.DUES === 0 && "Owes dues"]
                         .filter(Boolean).join(" · ")}
                     </span>
                   </span>
@@ -272,6 +272,13 @@ export function LineupTab({ data, onChange }: { data: MatchDetail; onChange: () 
       {weightsOpen && <WeightsSheet sel={sel} matchId={m.id} onClose={() => setWeightsOpen(false)} onSaved={loadSelection} />}
     </>
   );
+}
+
+const GROUPS: Record<string, "GK" | "DEF" | "MID" | "ATT"> = {
+  GK: "GK", CB: "DEF", LB: "DEF", RB: "DEF", LWB: "DEF", RWB: "DEF", CDM: "MID", CM: "MID", CAM: "MID", LM: "MID", RM: "MID", LW: "ATT", RW: "ATT", CF: "ATT", ST: "ATT",
+};
+function groupOf(position: string) {
+  return GROUPS[position] ?? "MID";
 }
 
 function best(c: Candidate) {
