@@ -27,6 +27,7 @@ export default function MePage() {
             <span>{me.usesDefaultPasscode ? "Last 4 of phone" : "Your own ✓"}</span>
           </div>
         </div>
+        <Link href="/seasons" className="btn btn-ghost btn-block">Seasons</Link>
         <Link href="/passcode" className="btn btn-ghost btn-block">
           {me.usesDefaultPasscode ? "Set your passcode" : "Change passcode"}
         </Link>

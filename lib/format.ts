@@ -67,3 +67,37 @@ export function resetMessage(m: Member): string {
     `Sign in at ${CLUB_URL} with your phone and the last 4 digits of your phone, then set a new passcode.`,
   ].join("\n");
 }
+
+/** 200000 kobo → "₦2,000". */
+export function naira(kobo: number): string {
+  const n = Math.abs(kobo) / 100;
+  const s = n.toLocaleString("en-NG", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+  return `${kobo < 0 ? "−" : ""}₦${s}`;
+}
+
+/** "2,000" typed by a human → 200000 kobo. Returns 0 for nonsense. */
+export function toKobo(text: string): number {
+  const n = Number(text.replace(/[^0-9.]/g, ""));
+  return Number.isFinite(n) ? Math.round(n * 100) : 0;
+}
+
+export function dayMonth(iso: string): string {
+  return new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
+/** Reminder for one member, straight to their WhatsApp. */
+export function dueReminder(name: string, title: string, owedKobo: number, dueDate: string): string {
+  return `Hi ${name}, a quick reminder: ${title} — ${naira(owedKobo)} still to pay (due ${dayMonth(dueDate)}). Thanks! ⚽`;
+}
+
+/** One message for the squad group listing who still owes. */
+export function groupReminder(title: string, amountKobo: number, dueDate: string, names: string[]): string {
+  return [
+    `${title} — ${naira(amountKobo)}, due ${dayMonth(dueDate)}`,
+    ``,
+    `Still to pay:`,
+    ...names.map((n) => `• ${n}`),
+    ``,
+    `Please pay the treasurer. Thank you 🙏`,
+  ].join("\n");
+}

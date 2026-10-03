@@ -124,3 +124,90 @@ export const PLAN_NAMES: Record<string, string> = {
   BLK: "Defend",
   DIR: "Direct",
 };
+
+// ---------- M3: money ----------
+
+export type Category =
+  | "DUES" | "CDC" | "TOURNAMENT_FEE" | "KIT" | "WELFARE" | "DONATION"
+  | "FIELD_RENTAL" | "EQUIPMENT" | "TRANSPORT" | "MATCH_FEE" | "OTHER";
+export type Method = "CASH" | "TRANSFER" | "POS";
+export type DueState = "PAID" | "PARTIAL" | "UNPAID";
+export type Audience = "ACTIVE" | "ACTIVE_AND_TRIALISTS" | "SELECTED";
+
+export interface CollectionSummary {
+  id: string;
+  title: string;
+  type: Category;
+  typeLabel: string;
+  amountKobo: number;
+  dueDate: string;
+  recurring: boolean;
+  open: boolean;
+  overdue: boolean;
+  memberCount: number;
+  paidCount: number;
+  partialCount: number;
+  expectedKobo: number;
+  collectedKobo: number;
+}
+
+export interface MemberDue {
+  memberId: string;
+  fullName: string;
+  nickname?: string;
+  jerseyNumber?: number;
+  phone?: string;
+  paidKobo: number;
+  owedKobo: number;
+  state: DueState;
+}
+
+export interface CollectionDetail {
+  summary: CollectionSummary;
+  members: MemberDue[];
+}
+
+export interface Entry {
+  id: string;
+  direction: "IN" | "OUT";
+  category: Category;
+  categoryLabel: string;
+  amountKobo: number;
+  member?: { id: string; name: string };
+  collection?: { id: string; name: string };
+  method: Method;
+  occurredOn: string;
+  note?: string;
+  reversesId?: string;
+  reversed: boolean;
+  hasReceipt: boolean;
+  flagged: boolean;
+  recordedBy?: string;
+  recordedAt: string;
+}
+
+export interface LedgerMonth {
+  month: string;
+  entries: Entry[];
+  inKobo: number;
+  outKobo: number;
+  balanceKobo: number;
+  flaggedCount: number;
+}
+
+export const METHOD_LABEL: Record<Method, string> = { CASH: "Cash", TRANSFER: "Transfer", POS: "POS" };
+
+/** Multipart upload; the browser sets the boundary header itself. */
+export async function upload<T>(path: string, file: Blob, filename = "receipt.jpg"): Promise<T> {
+  const form = new FormData();
+  form.append("file", file, filename);
+  const res = await fetch(`/api${path}`, {
+    method: "PUT",
+    body: form,
+    headers: { "X-CVG-Client": "cvg-admin" },
+    credentials: "same-origin",
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) throw new ApiError(res.status, data?.code ?? "error", data?.message ?? "Upload failed.", data?.fields);
+  return data as T;
+}

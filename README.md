@@ -17,7 +17,11 @@ Part of the CVG FC Club Management System, built by Devstrike Digital Limited.
 | Squad | Search by name or jersey, filter by status |
 | Add member | Name, phone, nickname, jersey, Trialist/Active, roles. Then **Send on WhatsApp** opens that member's chat with their private join link |
 | Member | Profile (positions, foot, strengths, emergency contact) and playing style · tap to change status or roles · Edit details · **Send join link** · **Reset passcode** (then tell them on WhatsApp) |
-| Seasons | Add a season (pre-filled Sept–Aug), make one active |
+| Seasons | Add a season (pre-filled Sept–Aug), make one active (under Me) |
+| **Money** (admin, treasurer) | Club balance, this month in/out, receipt warnings. **Collections**: start monthly dues (repeat by themselves on the 1st) or one-off collections for active / active+trialists / picked members |
+| Collection | Collected vs expected, paid/part/owes filter. **Tap a name → "Record ₦2,000 paid"** (amount pre-filled, Cash/Transfer/POS). 💬 reminder per person, one WhatsApp reminder listing everyone who still owes, close |
+| Money in / out | Donations and other income; expenses with type, details, date and a 📷 receipt photo |
+| Ledger | Month by month, grouped by day. Tap an entry: details, add/view receipt, or reverse a mistake (a correcting entry; nothing is ever deleted) |
 | Me | Change passcode, sign out |
 
 Only admins can change things; coaches, treasurers and captains can view for now.

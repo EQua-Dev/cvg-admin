@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { api, ApiError, type Member, type Season } from "@/lib/api";
-import { firstName, greeting } from "@/lib/format";
+import { api, ApiError, type LedgerMonth, type Member, type Season } from "@/lib/api";
+import { firstName, greeting, naira } from "@/lib/format";
 import { useSession } from "@/components/Session";
 import { TopBar } from "@/components/ui";
 
@@ -11,13 +11,16 @@ export default function HomePage() {
   const { me, isAdmin } = useSession();
   const [members, setMembers] = useState<Member[] | null>(null);
   const [season, setSeason] = useState<Season | null | undefined>(undefined);
+  const [money, setMoney] = useState<LedgerMonth | null>(null);
+  const handlesMoney = me.member.roles.some((r) => r === "ADMIN" || r === "TREASURER");
 
   useEffect(() => {
     api<Member[]>("/members").then(setMembers).catch(() => setMembers([]));
     api<Season>("/seasons/current")
       .then(setSeason)
       .catch((e) => setSeason(e instanceof ApiError && e.status === 404 ? null : undefined));
-  }, []);
+    if (handlesMoney) api<LedgerMonth>("/ledger").then(setMoney).catch(() => {});
+  }, [handlesMoney]);
 
   const active = members?.filter((m) => m.status === "ACTIVE").length ?? 0;
   const trialists = members?.filter((m) => m.status === "TRIALIST").length ?? 0;
@@ -55,6 +58,17 @@ export default function HomePage() {
           </span>
           <span aria-hidden>→</span>
         </Link>
+
+        {handlesMoney && (
+          <Link href="/money" className="card card-link">
+            <span className="stack" style={{ gap: 6 }}>
+              <span className="label">Club balance</span>
+              <span className="stat">{money ? naira(money.balanceKobo) : "–"}</span>
+              {money && money.flaggedCount > 0 && <span className="small" style={{ color: "var(--caution)" }}>⚠ {money.flaggedCount} without receipt</span>}
+            </span>
+            <span aria-hidden>→</span>
+          </Link>
+        )}
 
         <Link href="/seasons" className="card card-link">
           <span className="stack" style={{ gap: 6 }}>
