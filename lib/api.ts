@@ -211,3 +211,70 @@ export async function upload<T>(path: string, file: Blob, filename = "receipt.jp
   if (!res.ok) throw new ApiError(res.status, data?.code ?? "error", data?.message ?? "Upload failed.", data?.fields);
   return data as T;
 }
+
+// ---------- M4: training ----------
+
+export type SessionKind = "COMPULSORY" | "OPTIONAL";
+export type SessionStatus = "SCHEDULED" | "CLOSED" | "CANCELLED";
+export type Availability = "IN" | "OUT";
+export type OutReason = "INJURED" | "SICK" | "TRAVELLING" | "WORK" | "FAMILY" | "OTHER";
+export type Mark = "PRESENT" | "LATE" | "ABSENT" | "EXCUSED";
+
+export interface Pattern {
+  id: string;
+  weekday: number;
+  startTime: string;
+  venue: string;
+  kind: SessionKind;
+}
+
+export interface Session {
+  id: string;
+  startsAt: string;
+  date: string;
+  time: string;
+  venue: string;
+  kind: SessionKind;
+  impromptu: boolean;
+  focus?: string;
+  status: SessionStatus;
+  inCount: number;
+  outCount: number;
+  markedCount: number;
+  me?: { status: Availability; reason?: OutReason; locked: boolean; lockAt: string };
+  myMark?: Mark;
+}
+
+export interface RosterRow {
+  memberId: string;
+  fullName: string;
+  nickname?: string;
+  jerseyNumber?: number;
+  availability: Availability;
+  reason?: OutReason;
+  mark?: Mark;
+}
+
+export interface SessionDetail {
+  session: Session;
+  roster?: RosterRow[];
+}
+
+export interface MemberAttendance {
+  memberId: string;
+  fullName: string;
+  jerseyNumber?: number;
+  percent?: number;
+  counted: number;
+  attended: number;
+  late: number;
+  excused: number;
+  absent: number;
+  streak: number;
+  extras: number;
+  noShows: number;
+}
+
+export const REASON_LABEL: Record<OutReason, string> = {
+  INJURED: "Injured", SICK: "Sick", TRAVELLING: "Travelling", WORK: "Work", FAMILY: "Family", OTHER: "Other",
+};

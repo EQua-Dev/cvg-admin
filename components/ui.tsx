@@ -80,6 +80,7 @@ const ICONS = {
   home: "M4 10.5 12 4l8 6.5M6 9.5V20h12V9.5",
   squad: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.5 19a5.5 5.5 0 0 1 11 0M16 6.5a3 3 0 0 1 0 5.5M17 14.5a5.5 5.5 0 0 1 3.5 4.5",
   money: "M3 7h18v10H3zM12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM6 10v.01M18 14v.01",
+  training: "M9 12l2 2 4-4M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z",
   me: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0",
 };
 
@@ -87,9 +88,11 @@ export function BottomNav() {
   const path = usePathname();
   const { me } = useSession();
   const handlesMoney = me.member.roles.some((r) => r === "ADMIN" || r === "TREASURER");
+  const runsTraining = me.member.roles.some((r) => r === "ADMIN" || r === "COACH" || r === "CAPTAIN");
   const tabs = [
     { href: "/", label: "Home", icon: ICONS.home },
     { href: "/members", label: "Squad", icon: ICONS.squad },
+    ...(runsTraining ? [{ href: "/training", label: "Training", icon: ICONS.training }] : []),
     ...(handlesMoney ? [{ href: "/money", label: "Money", icon: ICONS.money }] : []),
     { href: "/me", label: "Me", icon: ICONS.me },
   ];

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { api, ApiError, type LedgerMonth, type Member, type Season } from "@/lib/api";
-import { firstName, greeting, naira } from "@/lib/format";
+import { api, ApiError, type LedgerMonth, type Member, type Season, type Session } from "@/lib/api";
+import { clock, firstName, greeting, naira, sessionDay } from "@/lib/format";
 import { useSession } from "@/components/Session";
 import { TopBar } from "@/components/ui";
 
@@ -13,6 +13,8 @@ export default function HomePage() {
   const [season, setSeason] = useState<Season | null | undefined>(undefined);
   const [money, setMoney] = useState<LedgerMonth | null>(null);
   const handlesMoney = me.member.roles.some((r) => r === "ADMIN" || r === "TREASURER");
+  const runsTraining = me.member.roles.some((r) => r === "ADMIN" || r === "COACH" || r === "CAPTAIN");
+  const [next, setNext] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
     api<Member[]>("/members").then(setMembers).catch(() => setMembers([]));
@@ -20,6 +22,9 @@ export default function HomePage() {
       .then(setSeason)
       .catch((e) => setSeason(e instanceof ApiError && e.status === 404 ? null : undefined));
     if (handlesMoney) api<LedgerMonth>("/ledger").then(setMoney).catch(() => {});
+    api<Session[]>("/training/sessions")
+      .then((l) => setNext(l.find((s) => s.status === "SCHEDULED") ?? null))
+      .catch(() => setNext(null));
   }, [handlesMoney]);
 
   const active = members?.filter((m) => m.status === "ACTIVE").length ?? 0;
@@ -39,6 +44,17 @@ export default function HomePage() {
               <strong>Set your own passcode</strong>
               <br />
               <span className="muted small">You still use the last 4 digits of your phone.</span>
+            </span>
+            <span aria-hidden>→</span>
+          </Link>
+        )}
+
+        {runsTraining && next && (
+          <Link href={`/training/${next.id}`} className="card card-link card-accent">
+            <span className="stack" style={{ gap: 6 }}>
+              <span className="label">Next training</span>
+              <span className="mono" style={{ fontWeight: 600 }}>{sessionDay(next.date)} · {clock(next.time)}</span>
+              <span className="small"><strong style={{ color: "var(--good)" }}>{next.inCount} in</strong> · {next.outCount} out · {next.venue}</span>
             </span>
             <span aria-hidden>→</span>
           </Link>

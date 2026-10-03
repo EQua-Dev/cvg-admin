@@ -101,3 +101,16 @@ export function groupReminder(title: string, amountKobo: number, dueDate: string
     `Please pay the treasurer. Thank you 🙏`,
   ].join("\n");
 }
+
+/** "WED 16 JUL" */
+export function sessionDay(dateIso: string): string {
+  return new Date(dateIso + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }).toUpperCase().replace(",", "");
+}
+
+/** "17:30:00" → "5:30PM" */
+export function clock(time: string): string {
+  const [h, m] = time.split(":").map(Number);
+  return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")}${h < 12 ? "AM" : "PM"}`;
+}
+
+export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

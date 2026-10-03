@@ -22,6 +22,9 @@ Part of the CVG FC Club Management System, built by Devstrike Digital Limited.
 | Collection | Collected vs expected, paid/part/owes filter. **Tap a name → "Record ₦2,000 paid"** (amount pre-filled, Cash/Transfer/POS). 💬 reminder per person, one WhatsApp reminder listing everyone who still owes, close |
 | Money in / out | Donations and other income; expenses with type, details, date and a 📷 receipt photo |
 | Ledger | Month by month, grouped by day. Tap an entry: details, add/view receipt, or reverse a mistake (a correcting entry; nothing is ever deleted) |
+| **Training** (admin, coach, captain) | Upcoming sessions with in/out counts, next session up top. **Weekly schedule**: add a day + time + compulsory/optional slot; the next 14 days fill in by themselves. **Impromptu** session in three taps |
+| Session | **Who's coming**: everyone starts "In"; tap to set someone out with a one-tap reason. **Attendance**: big rows, tap in → out → clear, hold for Late/Excused. Works with no signal (taps queue as "⚡ N queued" and send when back online). Close the session (unmarked count as absent); after closing only coach/admin can fix marks, and fixes are logged |
+| Attendance report | Season %, attended/counted, streak, optional extras and no-shows per player (late counts as present, excused doesn't count) |
 | Me | Change passcode, sign out |
 
 Only admins can change things; coaches, treasurers and captains can view for now.

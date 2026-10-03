@@ -166,3 +166,25 @@ button { font: inherit; color: inherit; }
 .struck { text-decoration: line-through; opacity: 0.55; }
 .icon-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
 .day-head { font: 600 12px var(--font); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 14px 16px 6px; background: var(--bg); }
+
+/* ---------- M4: training ---------- */
+.kind { font: 700 11px var(--font); letter-spacing: 0.06em; text-transform: uppercase; }
+.kind-COMPULSORY { color: var(--orange); }
+.kind-OPTIONAL { color: var(--teal); }
+.mark-row { display: flex; align-items: center; gap: 14px; height: 64px; padding: 0 16px; border-bottom: 1px solid var(--line-soft); border-left: 4px solid transparent; cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; transition: background 100ms; }
+.mark-row:last-child { border-bottom: none; }
+.mark-PRESENT { background: var(--good-bg); border-left-color: var(--good); }
+.mark-ABSENT { background: var(--alert-bg); border-left-color: var(--alert); }
+.mark-LATE { background: var(--caution-bg); border-left-color: var(--caution); }
+.mark-EXCUSED { background: var(--haze); border-left-color: var(--slate); }
+.mark-label { font: 700 14px var(--font); min-width: 64px; text-align: right; }
+.mark-label-PRESENT { color: var(--good); }
+.mark-label-ABSENT { color: var(--alert); }
+.mark-label-LATE { color: var(--caution); }
+.mark-label-EXCUSED { color: var(--slate); }
+.queued { display: inline-flex; align-items: center; gap: 4px; font: 600 12px var(--mono); color: #8a5e08; background: var(--caution-bg); border-radius: var(--radius); padding: 4px 8px; }
+.stat-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.stat-table th { font: 600 11px var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-align: right; padding: 8px 6px; }
+.stat-table th:first-child, .stat-table td:first-child { text-align: left; }
+.stat-table td { padding: 10px 6px; border-top: 1px solid var(--line-soft); text-align: right; font-family: var(--mono); }
+.stat-table td.name { font-family: var(--font); font-weight: 600; }
