@@ -25,6 +25,10 @@ Part of the CVG FC Club Management System, built by Devstrike Digital Limited.
 | **Training** (admin, coach, captain) | Upcoming sessions with in/out counts, next session up top. **Weekly schedule**: add a day + time + compulsory/optional slot; the next 14 days fill in by themselves. **Impromptu** session in three taps |
 | Session | **Who's coming**: everyone starts "In"; tap to set someone out with a one-tap reason. **Attendance**: big rows, tap in → out → clear, hold for Late/Excused. Works with no signal (taps queue as "⚡ N queued" and send when back online). Close the session (unmarked count as absent); after closing only coach/admin can fix marks, and fixes are logged |
 | Attendance report | Season %, attended/counted, streak, optional extras and no-shows per player (late counts as present, excused doesn't count) |
+| **Matches** (admin, coach, captain) | Coming up / results. **New match** in taps: opponent (remembers past ones), day, kick-off, meet time, venue, 5/7/9/11-a-side, home/away, type, game plan + Plan B, kit, optional fee |
+| Match · Squad | Everyone "In" by default; tap to set someone out with a reason |
+| Match · Lineup | Formation chips, pitch board. **✨ Auto-fill** picks the best available XI and bench. Tap any spot: players ranked for that spot with a 0–100 score (position, plan fit, training, form, dues) and why. Guests by name, captain and set-piece takers, ⚙ to change what counts for this match. Publish, then **Share lineup on WhatsApp** |
+| Match · Result | Score steppers, tap who scored and assisted, who played (pre-filled from the lineup). Saving opens a 48h POTM vote and, if there's a fee, a match-fee collection. Then: votes cast, close early, winner, and what the squad said (tag bars plus each opinion with the author's name) |
 | Me | Change passcode, sign out |
 
 Only admins can change things; coaches, treasurers and captains can view for now.

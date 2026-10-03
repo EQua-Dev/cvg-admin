@@ -114,3 +114,29 @@ export function clock(time: string): string {
 }
 
 export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+/** WhatsApp-ready lineup. */
+export function lineupMessage(m: { opponent: string; date: string; time: string; meetTime?: string; venue: string; kit?: string }, l: { formation: string; slots: { position?: string; name?: string; memberId?: string }[]; bench: { name?: string }[]; captainId?: string }): string {
+  const xi = l.slots.map((s) => `${(s.position ?? "").padEnd(3, " ")} ${s.name ?? "—"}${s.memberId && s.memberId === l.captainId ? " (C)" : ""}`);
+  const bench = l.bench.filter((b) => b.name).map((b) => b.name);
+  return [
+    `*CVG FC vs ${m.opponent}*`,
+    `${sessionDay(m.date)} · ${clock(m.time)} · ${m.venue}`,
+    m.meetTime ? `Meet ${clock(m.meetTime)}${m.kit ? ` · Kit: ${m.kit}` : ""}` : m.kit ? `Kit: ${m.kit}` : "",
+    ``,
+    `*${l.formation}*`,
+    "```",
+    ...xi,
+    "```",
+    bench.length ? `Bench: ${bench.join(", ")}` : "",
+    ``,
+    `Let's go CVG 🟠`,
+  ].filter((x, i, a) => x !== "" || a[i - 1] !== "").join("\n");
+}
+
+/** WhatsApp-ready result. */
+export function resultMessage(opponent: string, our: number, their: number, scorers: string[]): string {
+  const word = our > their ? "WIN" : our === their ? "DRAW" : "LOSS";
+  return [`*FT: CVG FC ${our} – ${their} ${opponent}* (${word})`, scorers.length ? `⚽ ${scorers.join(", ")}` : "", ``, `Vote for Player of the Match in the CVG app 🗳️`]
+    .filter((x, i, a) => x !== "" || a[i - 1] !== "").join("\n");
+}

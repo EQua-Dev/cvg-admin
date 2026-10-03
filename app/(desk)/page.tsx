@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { api, ApiError, type LedgerMonth, type Member, type Season, type Session } from "@/lib/api";
+import { api, ApiError, type LedgerMonth, type MatchView, type Member, type Season, type Session } from "@/lib/api";
 import { clock, firstName, greeting, naira, sessionDay } from "@/lib/format";
 import { useSession } from "@/components/Session";
 import { TopBar } from "@/components/ui";
@@ -15,6 +15,7 @@ export default function HomePage() {
   const handlesMoney = me.member.roles.some((r) => r === "ADMIN" || r === "TREASURER");
   const runsTraining = me.member.roles.some((r) => r === "ADMIN" || r === "COACH" || r === "CAPTAIN");
   const [next, setNext] = useState<Session | null | undefined>(undefined);
+  const [matches, setMatches] = useState<MatchView[]>([]);
 
   useEffect(() => {
     api<Member[]>("/members").then(setMembers).catch(() => setMembers([]));
@@ -25,7 +26,12 @@ export default function HomePage() {
     api<Session[]>("/training/sessions")
       .then((l) => setNext(l.find((s) => s.status === "SCHEDULED") ?? null))
       .catch(() => setNext(null));
-  }, [handlesMoney]);
+    if (runsTraining) {
+      Promise.all([api<MatchView[]>("/matches?when=upcoming"), api<MatchView[]>("/matches?when=past")])
+        .then(([up, past]) => setMatches([...past.filter((m) => m.potmOpen), ...up.filter((m) => m.status === "SCHEDULED").slice(0, 1)]))
+        .catch(() => {});
+    }
+  }, [handlesMoney, runsTraining]);
 
   const active = members?.filter((m) => m.status === "ACTIVE").length ?? 0;
   const trialists = members?.filter((m) => m.status === "TRIALIST").length ?? 0;
@@ -59,6 +65,22 @@ export default function HomePage() {
             <span aria-hidden>→</span>
           </Link>
         )}
+
+        {matches.map((m) => (
+          <Link key={m.id} href={`/matches/${m.id}`} className="card card-link card-accent">
+            <span className="stack" style={{ gap: 6 }}>
+              <span className="label">{m.status === "PLAYED" ? "POTM vote open" : "Next match"}</span>
+              <strong>vs {m.opponent}{m.outcome ? ` · ${m.ourScore}–${m.theirScore}` : ""}</strong>
+              {m.status === "SCHEDULED" && (
+                <span className="small">
+                  <span className="mono" style={{ fontWeight: 600 }}>{sessionDay(m.date)} · {clock(m.time)}</span> ·{" "}
+                  <strong style={{ color: "var(--good)" }}>{m.inCount} in</strong> · {m.lineupPublished ? "lineup out ✓" : "pick the lineup"}
+                </span>
+              )}
+            </span>
+            <span aria-hidden>→</span>
+          </Link>
+        ))}
 
         <Link href="/members" className="card card-link">
           <span className="stack" style={{ gap: 6 }}>
